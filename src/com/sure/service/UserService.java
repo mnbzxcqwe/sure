@@ -27,13 +27,13 @@ public class UserService {
 	 * 获取用户列表
 	 * @param pageNum
 	 * @param pageSize
-	 * @param para
+	 * @param param
 	 * @return
 	 */
-	public List<User> getUsers(int pageNum, int pageSize, Map para){
+	public List<User> getUsers(int pageNum, int pageSize, Map param){
 		
 		PageHelper.startPage(pageNum, pageSize);
-		List<User> users = userMapper.findUsers(para);
+		List<User> users = userMapper.findUsers(param);
 		
 		return users;
 	}
@@ -43,7 +43,7 @@ public class UserService {
 	 * @param userName
 	 * @return
 	 */
-	public boolean checkNuserNameExist(String userName){
+	public boolean checkUserNameExist(String userName){
 		User user = userMapper.selectByPrimaryKey(userName);
 		
 		return user == null;

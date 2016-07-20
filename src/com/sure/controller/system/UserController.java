@@ -54,10 +54,10 @@ public class UserController extends BaseController {
 	 * @return
 	 * @throws Exception
 	 */
-	@RequestMapping(value="/checkNuserNameExist")
+	@RequestMapping(value="/checkUserNameExist")
 	@ResponseBody
-	public boolean checkNuserNameExist(String userName)throws Exception{
-		return userService.checkNuserNameExist(userName);
+	public boolean checkUserNameExist(String userName)throws Exception{
+		return userService.checkUserNameExist(userName);
 	}
 	
 	/**

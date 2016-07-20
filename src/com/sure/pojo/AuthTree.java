@@ -5,14 +5,19 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.codehaus.jackson.annotate.JsonProperty;
+
 public class AuthTree {
+	@JsonProperty("id")
     private String authId;
+	@JsonProperty("text")
     private String authName;
     private String authEntry;
     private Integer authType;
     private Integer authOrder;
     private String authParent;
     
+    @JsonProperty("children")
     private List<AuthTree> children = new ArrayList<AuthTree>();
     
     private AuthTree(Auth auth){

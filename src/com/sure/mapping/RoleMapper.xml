@@ -119,4 +119,15 @@
       create_by = #{createBy,jdbcType=VARCHAR}
     where role_id = #{roleId,jdbcType=INTEGER}
   </update>
+  
+  <select id="findRoles" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT 
+	<include refid="Base_Column_List" />
+    FROM sys_role
+    <where>
+        <if test="roleName != null and roleName != ''">
+		    LOCATE(#{roleName}, role_name) > 0
+		</if>
+    </where>
+  </select>
 </mapper>

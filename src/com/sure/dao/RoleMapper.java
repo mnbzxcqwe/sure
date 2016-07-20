@@ -1,5 +1,8 @@
 package com.sure.dao;
 
+import java.util.List;
+import java.util.Map;
+
 import com.sure.pojo.Role;
 
 public interface RoleMapper {
@@ -39,4 +42,6 @@ public interface RoleMapper {
 	 * @mbggenerated  Thu Jun 30 17:59:14 CST 2016
 	 */
 	int updateByPrimaryKey(Role record);
+	
+	List<Role> findRoles(Map param);
 }

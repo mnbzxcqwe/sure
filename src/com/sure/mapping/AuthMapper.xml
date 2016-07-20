@@ -144,10 +144,15 @@
     where auth_id = #{authId,jdbcType=VARCHAR}
   </update>
   
-  <select id="findAuths" resultMap="BaseResultMap">
+  <select id="findAuths" parameterType="java.util.Map" resultMap="BaseResultMap">
     SELECT 
     <include refid="Base_Column_List" />
     FROM sys_auth
+    <where>
+        <if test="authParent != null and authParent != ''">
+		    auth_parent = #{authParent}
+		</if>
+    </where>
     ORDER BY auth_type, auth_order
   </select>
   

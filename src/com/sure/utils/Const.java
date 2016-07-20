@@ -9,4 +9,7 @@ public class Const {
 	public static final String EASYUI_PAGE_NUMBER = "page"; //easyui 分页控件 页数参数
 	public static final String EASYUI_PAGE_SIZE = "rows"; //easyui 分页控件 每页数据量参数
 	
+	public static final String AJAX_ERROR_MSG = "errorMsg"; //ajax请求错误消息key
+	public static final String AJAX_ERROR_EXCEPTION = "errorException"; //ajax请求错误异常内容key
+	
 }

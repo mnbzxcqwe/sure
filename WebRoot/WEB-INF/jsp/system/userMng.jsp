@@ -141,12 +141,12 @@
 		
 		<%-- 新增 --%>
 		<div id="addDlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
-			closed="true" buttons="#addDlgBtns" title="新增用户" modal="true">
+			closed="true" buttons="#addDlgBtns" title="新增用户" modal="true" resizable="true">
 			<div class="ftitle">用户信息</div>
 			<form id="addForm" method="post" data-options="url:'<%=basePath%>/user/addUser'">
 				<div class="fitem">
 					<label>账号:</label>
-					<input name="userName" class="easyui-validatebox" required="true" validType="remote['<%=basePath%>/user/checkNuserNameExist','userName']" invalidMessage="该用户名已存在">
+					<input name="userName" class="easyui-validatebox" required="true" validType="remote['<%=basePath%>/user/checkUserNameExist','userName']" invalidMessage="该用户名已存在">
 				</div>
 				<div class="fitem">
 					<label>密码:</label>
@@ -172,7 +172,7 @@
 		
 		<%-- 编辑 --%>
 		<div id="editDlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
-			closed="true" buttons="#editDlgBtns" title="编辑用户" modal="true">
+			closed="true" buttons="#editDlgBtns" title="编辑用户" modal="true" resizable="true">
 			<div class="ftitle">用户信息</div>
 			<form id="editForm" method="post" data-options="url:'<%=basePath%>/user/editUser'">
 				<div class="fitem">

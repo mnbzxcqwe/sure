@@ -42,5 +42,5 @@ public interface UserMapper {
 	 */
 	int updateByPrimaryKey(User record);
 
-	List<User> findUsers(Map para);
+	List<User> findUsers(Map param);
 }

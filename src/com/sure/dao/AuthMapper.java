@@ -1,6 +1,7 @@
 package com.sure.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.sure.pojo.Auth;
 
@@ -42,13 +43,13 @@ public interface AuthMapper {
 	int updateByPrimaryKey(Auth record);
 
 	/**
-     * 获取�?��权限的列�?
+     * 获取权限的列表
      * @return
      */
-    List<Auth> findAuths();
+    List<Auth> findAuths(Map param);
     
     /**
-     * 获取用户的权限列�?
+     * 获取用户的权限列表
      * @param userName
      * @return
      */
