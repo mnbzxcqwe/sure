@@ -85,5 +85,9 @@ public class ShiroRealm extends AuthorizingRealm {
 	public void clearAllCachedAuthorizationInfoPublic(){
 		getAuthorizationCache().clear();
 	}
-
+	
+	public void clearCachedAuthorizationInfoPublic(PrincipalCollection pc){
+		clearCachedAuthorizationInfo(pc);
+	}
+	
 }

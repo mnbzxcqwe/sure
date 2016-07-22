@@ -8,8 +8,10 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.sure.dao.AuthMapper;
+import com.sure.dao.RoleAuthMapper;
 import com.sure.exception.MyException;
 import com.sure.pojo.Auth;
 import com.sure.pojo.AuthTree;
@@ -19,6 +21,9 @@ public class AuthService {
 	
 	@Resource
 	AuthMapper authMapper;
+	
+	@Resource
+	RoleAuthMapper roleAuthMapper;
 	
 	@Resource(name="ShiroFilerChainManager")
 	ShiroFilerChainManager shiroFilerChainManager;
@@ -108,6 +113,7 @@ public class AuthService {
 	 * @return
 	 * @throws Exception
 	 */
+	@Transactional
 	public int delAuth(String authId) throws Exception{
 		Map param = new HashMap();
 		param.put("authParent", authId);
@@ -117,6 +123,8 @@ public class AuthService {
 		if(children.size() > 0){
 			throw new MyException("存在子权限,不能删除父权限");
 		}
+		
+		roleAuthMapper.deleteByAuthId(authId);
 		
 		return authMapper.deleteByPrimaryKey(authId);
 	}

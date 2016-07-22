@@ -7,12 +7,14 @@ import javax.annotation.Resource;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.mgt.RealmSecurityManager;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
 
 import com.sure.dao.UserMapper;
 import com.sure.pojo.User;
+import com.sure.shiro.ShiroRealm;
 import com.sure.utils.Const;
 import com.sure.utils.MD5;
 
@@ -47,10 +49,13 @@ public class LoginService {
 			
 			//shiro加入身份验证
 			Subject subject = SecurityUtils.getSubject(); 
-			//先登出,再重新登录,以免权限缓存出错
-			subject.logout();
 		    UsernamePasswordToken token = new UsernamePasswordToken(user.getUserName(), user.getUserPassword()); 
 		    subject.login(token);
+		    
+		    //清除缓存数据,防止不触发鉴权方法,导致session为空
+		    RealmSecurityManager securityManager = (RealmSecurityManager) SecurityUtils.getSecurityManager();
+			ShiroRealm shiroRealm = (ShiroRealm)securityManager.getRealms().iterator().next();  
+		    shiroRealm.clearCachedAuthorizationInfoPublic(subject.getPrincipals());
 		    
 		    Session session = subject.getSession();
 		    session.setAttribute(Const.SESSION_USER_NAME, user.getUserName());

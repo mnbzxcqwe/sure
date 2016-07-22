@@ -1,6 +1,7 @@
 package com.sure.service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -10,10 +11,14 @@ import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.subject.Subject;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.github.pagehelper.PageHelper;
+import com.sure.dao.RoleMapper;
 import com.sure.dao.UserMapper;
+import com.sure.dao.UserRoleMapper;
 import com.sure.pojo.User;
+import com.sure.pojo.UserRoleKey;
 import com.sure.utils.Const;
 import com.sure.utils.MD5;
 
@@ -22,6 +27,12 @@ public class UserService {
 	
 	@Resource
 	UserMapper userMapper;
+	
+	@Resource
+	UserRoleMapper userRoleMapper;
+	
+	@Resource
+	RoleMapper roleMapper;
 	
 	/**
 	 * 获取用户列表
@@ -98,10 +109,51 @@ public class UserService {
 	 * @param userName
 	 * @return
 	 */
+	@Transactional
 	public int delUser(String userName){
 		
-		int result = userMapper.deleteByPrimaryKey(userName);
+		userRoleMapper.deleteByUserName(userName);
+		
+		return userMapper.deleteByPrimaryKey(userName);
+	}
+	
+	/**
+	 * 获取用户角色
+	 * @param userName
+	 * @return
+	 */
+	public Map getUserRoles(String userName){
+		Map result = new HashMap();
+		
+		result.put("userRoleIds", userRoleMapper.findRoleIdsByUserName(userName));
+		result.put("allRoles", roleMapper.findRoles(null));
 		
 		return result;
+	}
+	
+	/**
+	 * 分配用户角色
+	 * @param userName
+	 * @param roleIds
+	 * @return
+	 */
+	@Transactional
+	public int updateUserRoles(String userName, List<Integer> roleIds){
+		userRoleMapper.deleteByUserName(userName);
+		
+		UserRoleKey userRole = new UserRoleKey();
+		userRole.setUserName(userName);
+		
+		int count = 0;
+		
+		if(roleIds != null){
+			for(int i=0,len=roleIds.size(); i<len; i++){
+				userRole.setRoleId(roleIds.get(i));
+				
+				count += userRoleMapper.insert(userRole);
+			}
+		}
+		
+		return count;
 	}
 }

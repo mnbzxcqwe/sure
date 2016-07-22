@@ -5,7 +5,14 @@
 		<!-- jsp文件头和头部 -->
 		<%@ include file="../common/top.jsp"%>
 		
+		<script type="text/javascript" src="<%=basePath%>/resources/zTree/jquery.ztree.all.min.js"></script>
+	
+		<link rel="stylesheet" type="text/css" href="<%=basePath%>/resources/zTree/zTreeStyle/zTreeStyle.css">
+		
 		<script type="text/javascript">
+		
+			var authTree;
+			
 			$(function(){
 				$(window).resize(function(){
 					var fullScreen = getFullScreen("grid");
@@ -28,6 +35,19 @@
 					$('#editForm').form('load',row);
 				}else{
 					$.messager.alert("提示","请选择需要编辑的角色");
+				}
+			}
+			
+			function showRoleAuth(){
+				var row = $('#grid').datagrid('getSelected');
+				if (row){
+					$('#authDlg').dialog('open');
+					
+					$('#auth_roleId').val(row.roleId);
+					
+					getAuthTree(row.roleId);
+				}else{
+					$.messager.alert("提示","请选择需要分配权限的角色");
 				}
 			}
 			
@@ -93,6 +113,89 @@
 					$.messager.alert("提示","请选择需要删除的角色");
 				}
 			}
+			
+			function doUpdateRoleAuths(){
+				var nodes = authTree.getCheckedNodes(true);
+				
+				var authIds = new Array();
+				
+				for(var i=0,len=nodes.length; i<len; i++){
+					authIds.push(nodes[i].authId);
+				}
+				
+				var roleId = $('#auth_roleId').val();
+				
+				$.ajax({
+					url:'<%=basePath%>/role/updateRoleAuths',
+					data:{roleId:roleId,authIds:authIds},
+					type:'post',
+					dataType:'json',
+					success:function(result){
+						if (result.errorMsg){
+							$.messager.alert('Error',result.errorMsg);
+						} else {
+							$('#authDlg').dialog('close');
+						}
+					}
+				});
+			}
+			
+			function getAuthTree(roleId){
+				var setting = {
+					data: {
+						key: {
+							name: "authName"
+						},
+						simpleData: {
+							enable: true,
+							idKey: "authId",
+							pIdKey: "authParent",
+							rootPId: 1
+						}
+					},
+					check: {
+						enable: true,
+						chkStyle: "checkbox",
+						chkboxType: { "Y": "p", "N": "s" }
+					}
+				};
+				
+				$.ajax({
+					url:'<%=basePath%>/role/getRoleAuths',
+					data:{roleId:roleId},
+					type:'post',
+					dataType:'json',
+					success:function(result){
+						if (result.errorMsg){
+							$.messager.alert('Error',result.errorMsg);
+						} else {
+							authTree = $.fn.zTree.init($("#authTree"), setting, handleTreeData(result));
+						}
+					}
+				});
+			}
+			
+			function handleTreeData(data){
+				
+				var auths = data.allAuths;
+				var roleAuthIds = data.roleAuthIds;
+				
+				for(var i=0,len=auths.length; i<len; i++){
+					if(auths[i].authType == 0){
+						auths[i].isParent = true;
+						auths[i].open = true;
+						auths[i].nocheck = true;
+					}else if(auths[i].authType == 1 || auths[i].authType == 2){
+						auths[i].isParent = true;
+						auths[i].open = true;
+						auths[i].checked = (roleAuthIds.indexOf(auths[i].authId) >= 0)
+					}else{
+						auths[i].isParent = false;
+						auths[i].checked = (roleAuthIds.indexOf(auths[i].authId) >= 0)
+					}
+				}
+				return auths;
+			}
 		</script>
 	</head>
 	
@@ -110,6 +213,7 @@
 			<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="showAddRole()">新增角色</a>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="showEditRole()">编辑角色</a>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-cut" plain="true" onclick="doDelRole()">删除角色</a>
+			<a href="#" class="easyui-linkbutton" iconCls="icon-filter" plain="true" onclick="showRoleAuth()">分配角色权限</a>
 		</div>
 		
 		<table id="grid" class="easyui-datagrid" style="width:100%;"
@@ -165,6 +269,17 @@
 		<div id="editDlgBtns">
 			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="doEditRole()">保存</a>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#editDlg').dialog('close')">取消</a>
+		</div>
+		
+		<%-- 分配角色权限 --%>
+		<div id="authDlg" class="easyui-dialog" style="width:400px;height:300px;padding:10px 20px"
+			closed="true" buttons="#authDlgBtns" title="分配权限" modal="true" resizable="true">
+			<input id="auth_roleId" name="roleId" type="hidden" >
+			<ul id="authTree" class="ztree"></ul>
+		</div>
+		<div id="authDlgBtns">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="doUpdateRoleAuths()">保存</a>
+			<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#authDlg').dialog('close')">取消</a>
 		</div>
 	</body>
 </html>

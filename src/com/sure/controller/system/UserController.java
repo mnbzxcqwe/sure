@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -94,5 +95,32 @@ public class UserController extends BaseController {
 	@ResponseBody
 	public int delUser(String userName)throws Exception{
 		return userService.delUser(userName);
+	}
+	
+	/**
+	 * 获取用户角色
+	 * @param userName
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/getUserRoles", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public Object getUserRoles(String userName)throws Exception{
+		
+		return userService.getUserRoles(userName);
+	}
+	
+	/**
+	 * 分配用户角色
+	 * @param userName
+	 * @param roleIds
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/updateUserRoles", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public Object updateUserRoles(String userName, @RequestParam(value="roleIds[]", required=false) List<Integer> roleIds)throws Exception{
+		
+		return userService.updateUserRoles(userName, roleIds);
 	}
 }

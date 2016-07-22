@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -82,5 +83,32 @@ public class RoleController extends BaseController {
 	@ResponseBody
 	public int delRole(int roleId)throws Exception{
 		return roleService.delRole(roleId);
+	}
+	
+	/**
+	 * 获取角色权限
+	 * @param roleId
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/getRoleAuths", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public Object getRoleAuths(int roleId)throws Exception{
+		
+		return roleService.getRoleAuths(roleId);
+	}
+	
+	/**
+	 * 分配角色权限
+	 * @param roleId
+	 * @param authIds
+	 * @return
+	 * @throws Exception
+	 */
+	@RequestMapping(value="/updateRoleAuths", produces="application/json;charset=UTF-8")
+	@ResponseBody
+	public Object updateRoleAuths(int roleId, @RequestParam(value="authIds[]", required=false) List<String> authIds)throws Exception{
+		
+		return roleService.updateRoleAuths(roleId, authIds);
 	}
 }

@@ -27,5 +27,17 @@
 		enableDeleteByExample="false" enableSelectByExample="false"
 		selectByExampleQueryId="false" >
     </table>
+    
+    <table tableName="sys_user_role" domainObjectName="UserRole"
+        enableCountByExample="false" enableUpdateByExample="false"
+		enableDeleteByExample="false" enableSelectByExample="false"
+		selectByExampleQueryId="false" >
+    </table>
+    
+    <table tableName="sys_role_auth" domainObjectName="RoleAuth"
+        enableCountByExample="false" enableUpdateByExample="false"
+		enableDeleteByExample="false" enableSelectByExample="false"
+		selectByExampleQueryId="false" >
+    </table>
   </context>
 </generatorConfiguration>

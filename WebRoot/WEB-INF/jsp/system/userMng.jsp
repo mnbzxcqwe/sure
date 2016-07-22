@@ -5,7 +5,24 @@
 		<%-- jsp文件头和头部 --%>
 		<%@ include file="../common/top.jsp"%>
 		
+		<script type="text/javascript" src="<%=basePath%>/resources/zTree/jquery.ztree.all.min.js"></script>
+	
+		<link rel="stylesheet" type="text/css" href="<%=basePath%>/resources/zTree/zTreeStyle/zTreeStyle.css">
+		
+		<style type="text/css">
+			ul.ztree {
+				margin-top: 10px;
+				border: 1px solid #617775;
+				background: #f0f6e4;
+				height:360px;
+				overflow-y:scroll;
+				overflow-x:auto;
+			}
+		</style>
+		
 		<script type="text/javascript">
+			var roleTree, userRoleTree;
+		
 			$(function(){
 				$(window).resize(function(){
 					var fullScreen = getFullScreen("grid");
@@ -36,6 +53,19 @@
 					$('#editForm').form('load',row);
 				}else{
 					$.messager.alert("提示","请选择需要编辑的用户");
+				}
+			}
+			
+			function showUserRole(){
+				var row = $('#grid').datagrid('getSelected');
+				if (row){
+					$('#roleDlg').dialog('open');
+					
+					$("#role_userName").val(row.userName);
+					
+					getRoleTree(row.userName);
+				}else{
+					$.messager.alert("提示","请选择需要分配角色的用户");
 				}
 			}
 			
@@ -101,6 +131,99 @@
 					$.messager.alert("提示","请选择需要删除的用户");
 				}
 			}
+			
+			function doUpdateUserRoles(){
+				var nodes = userRoleTree.getNodes();
+				
+				var roleIds = new Array();
+				
+				for(var i=0,len=nodes.length; i<len; i++){
+					roleIds.push(nodes[i].roleId);
+				}
+				
+				var userName = $('#role_userName').val();
+				
+				$.ajax({
+					url:'<%=basePath%>/user/updateUserRoles',
+					data:{userName:userName,roleIds:roleIds},
+					type:'post',
+					dataType:'json',
+					success:function(result){
+						if (result.errorMsg){
+							$.messager.alert('Error',result.errorMsg);
+						} else {
+							$('#roleDlg').dialog('close');
+						}
+					}
+				});
+			}
+			
+			function getRoleTree(userName){
+				var setting = {
+					data: {
+						key: {
+							name: "roleName"
+						},
+						simpleData: {
+							enable: true,
+							idKey: "roleId"
+						}
+					},
+					edit: {
+						enable: false
+					},
+					view: {
+						showLine: false
+					}
+				};
+				
+				$.ajax({
+					url:'<%=basePath%>/user/getUserRoles',
+					data:{userName:userName},
+					type:'post',
+					dataType:'json',
+					success:function(result){
+						if (result.errorMsg){
+							$.messager.alert('Error',result.errorMsg);
+						} else {
+							var allRoles = result.allRoles;
+							var userRoleIds = result.userRoleIds;
+							var roles = new Array();
+							var userRoles = new Array();
+							
+							for(var i=0,len=allRoles.length; i<len; i++){
+								if(userRoleIds.indexOf(allRoles[i].roleId) >= 0){
+									userRoles.push(allRoles[i]);
+								}else{
+									roles.push(allRoles[i]);
+								}
+							}
+							
+							roleTree = $.fn.zTree.init($("#roleTree"), setting, roles);
+							userRoleTree = $.fn.zTree.init($("#userRoleTree"), setting, userRoles);
+						}
+					}
+				});
+			}
+			
+			
+			function toRight(){
+				var nodes = roleTree.getSelectedNodes();
+				userRoleTree.addNodes(null, nodes);
+				
+				$.each( nodes, function(i, node){
+					roleTree.removeNode(node);
+				});
+			}
+			
+			function toLeft(){
+				var nodes = userRoleTree.getSelectedNodes();
+				roleTree.addNodes(null, nodes);
+				
+				$.each( nodes, function(i, node){
+					userRoleTree.removeNode(node);
+				});
+			}
 		</script>
 		
 	</head>
@@ -126,6 +249,7 @@
 			<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="showAddUser()">新增用户</a>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="showEditUser()">编辑用户</a>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-cut" plain="true" onclick="doDelUser()">删除用户</a>
+			<a href="#" class="easyui-linkbutton" iconCls="icon-filter" plain="true" onclick="showUserRole()">分配用户角色</a>
 		</div>
 		
 		<table id="grid" class="easyui-datagrid" style="width:100%;"
@@ -199,6 +323,42 @@
 		<div id="editDlgBtns">
 			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="doEditUser()">保存</a>
 			<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#editDlg').dialog('close')">取消</a>
+		</div>
+		
+		<%-- 分配用户角色 --%>
+		<div id="roleDlg" class="easyui-dialog" style="width:650px;height:500px;padding:10px 20px"
+			closed="true" buttons="#roleDlgBtns" title="分配用户角色" modal="true" resizable="true">
+			<input id="role_userName" name="userName" type="hidden" >
+			<table style="width: 98%;">
+				<tr>
+					<td width="220px">
+						<div >
+							<div>未分配角色</div>
+							<ul id="roleTree" class="ztree"></ul>
+						</div>
+					</td>
+					<td align="center">
+						<div style="width: 100px;">
+							<div style="padding: 10px;">
+								<input type="button" onclick="toRight()" value="&gt;" style="padding: 0px 20px;">
+							</div>
+							<div style="padding: 10px;">
+								<input type="button" onclick="toLeft()" value="&lt;" style="padding: 0px 20px;">
+							</div>
+						</div>
+					</td>
+					<td width="220px">
+						<div>
+							<div>已分配角色</div>
+							<ul id="userRoleTree" class="ztree"></ul>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</div>
+		<div id="roleDlgBtns">
+			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="doUpdateUserRoles()">保存</a>
+			<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#roleDlg').dialog('close')">取消</a>
 		</div>
 		
 	</body>
