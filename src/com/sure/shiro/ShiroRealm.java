@@ -21,6 +21,7 @@ import org.apache.shiro.subject.Subject;
 import com.sure.dao.AuthMapper;
 import com.sure.pojo.Auth;
 import com.sure.pojo.AuthTree;
+import com.sure.utils.Config;
 import com.sure.utils.Const;
 
 
@@ -63,8 +64,14 @@ public class ShiroRealm extends AuthorizingRealm {
 		Session session = currentUser.getSession();
 		
 		SimpleAuthorizationInfo info=new SimpleAuthorizationInfo();
+
+		List<Auth> userAuths;
 		
-		List<Auth> userAuths = authMapper.findUserAuthsByUserName(userName);
+		if(Config.getString("ADMINISTRATORS_USER_NAME", "admin").equals(userName)){ //超级管理员
+			userAuths = authMapper.findAuths(null);
+		}else{ //普通用户
+			userAuths = authMapper.findUserAuthsByUserName(userName);
+		}
 		
 		//保存用户权限树
 		AuthTree authTree = new AuthTree(userAuths);

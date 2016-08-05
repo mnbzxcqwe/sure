@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.annotation.Resource;
 
+import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -57,6 +58,7 @@ public class RoleController extends BaseController {
 	 */
 	@RequestMapping(value="/addRole")
 	@ResponseBody
+	@RequiresPermissions("AddRole")
 	public int addRole(Role role)throws Exception{
 		return roleService.addRole(role);
 	}
@@ -69,6 +71,7 @@ public class RoleController extends BaseController {
 	 */
 	@RequestMapping(value="/editRole")
 	@ResponseBody
+	@RequiresPermissions("EditRole")
 	public int editRole(Role role)throws Exception{
 		return roleService.editRole(role);
 	}
@@ -81,6 +84,7 @@ public class RoleController extends BaseController {
 	 */
 	@RequestMapping(value="/delRole")
 	@ResponseBody
+	@RequiresPermissions("DelRole")
 	public int delRole(int roleId)throws Exception{
 		return roleService.delRole(roleId);
 	}
@@ -107,6 +111,7 @@ public class RoleController extends BaseController {
 	 */
 	@RequestMapping(value="/updateRoleAuths", produces="application/json;charset=UTF-8")
 	@ResponseBody
+	@RequiresPermissions("AllotAuth")
 	public Object updateRoleAuths(int roleId, @RequestParam(value="authIds[]", required=false) List<String> authIds)throws Exception{
 		
 		return roleService.updateRoleAuths(roleId, authIds);

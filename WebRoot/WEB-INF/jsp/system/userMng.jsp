@@ -1,4 +1,5 @@
 <%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+<%@ taglib prefix="shiro" uri="http://shiro.apache.org/tags" %> 
 <!DOCTYPE html>
 <html>
 	<head>
@@ -41,11 +42,14 @@
 				}
 			}
 			
+			<shiro:hasPermission name="AddUser">
 			function showAddUser(){
 				$('#addDlg').dialog('open');
 				$('#addForm').form('reset');
 			}
+			</shiro:hasPermission>
 			
+			<shiro:hasPermission name="EditUser">
 			function showEditUser(){
 				var row = $('#grid').datagrid('getSelected');
 				if (row){
@@ -55,7 +59,9 @@
 					$.messager.alert("提示","请选择需要编辑的用户");
 				}
 			}
+			</shiro:hasPermission>
 			
+			<shiro:hasPermission name="AllotRole">
 			function showUserRole(){
 				var row = $('#grid').datagrid('getSelected');
 				if (row){
@@ -68,11 +74,13 @@
 					$.messager.alert("提示","请选择需要分配角色的用户");
 				}
 			}
+			</shiro:hasPermission>
 			
 			function doSearch(){
 				$("#grid").datagrid('load',$("#searchForm").serializeObject());
 			}
 			
+			<shiro:hasPermission name="AddUser">
 			function doAddUser(){
 				$('#addForm').form('submit',{
 					onSubmit: function(){
@@ -89,7 +97,9 @@
 					}
 				});
 			}
+			</shiro:hasPermission>
 			
+			<shiro:hasPermission name="EditUser">
 			function doEditUser(){
 				$('#editForm').form('submit',{
 					onSubmit: function(){
@@ -106,7 +116,9 @@
 					}
 				});
 			}
+			</shiro:hasPermission>
 			
+			<shiro:hasPermission name="DelUser">
 			function doDelUser(){
 				var row = $('#grid').datagrid('getSelected');
 				if (row){
@@ -131,7 +143,9 @@
 					$.messager.alert("提示","请选择需要删除的用户");
 				}
 			}
+			</shiro:hasPermission>
 			
+			<shiro:hasPermission name="AllotRole">
 			function doUpdateUserRoles(){
 				var nodes = userRoleTree.getNodes();
 				
@@ -157,7 +171,9 @@
 					}
 				});
 			}
+			</shiro:hasPermission>
 			
+			<shiro:hasPermission name="AllotRole">
 			function getRoleTree(userName){
 				var setting = {
 					data: {
@@ -224,6 +240,7 @@
 					userRoleTree.removeNode(node);
 				});
 			}
+			</shiro:hasPermission>
 		</script>
 		
 	</head>
@@ -246,10 +263,18 @@
 		</div>
 		
 		<div id="tb">
-			<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="showAddUser()">新增用户</a>
-			<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="showEditUser()">编辑用户</a>
-			<a href="#" class="easyui-linkbutton" iconCls="icon-cut" plain="true" onclick="doDelUser()">删除用户</a>
-			<a href="#" class="easyui-linkbutton" iconCls="icon-filter" plain="true" onclick="showUserRole()">分配用户角色</a>
+			<shiro:hasPermission name="AddUser">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="showAddUser()">新增用户</a>
+			</shiro:hasPermission>
+			<shiro:hasPermission name="EditUser">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="showEditUser()">编辑用户</a>
+			</shiro:hasPermission>
+			<shiro:hasPermission name="DelUser">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-cut" plain="true" onclick="doDelUser()">删除用户</a>
+			</shiro:hasPermission>
+			<shiro:hasPermission name="AllotRole">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-filter" plain="true" onclick="showUserRole()">分配用户角色</a>
+			</shiro:hasPermission>
 		</div>
 		
 		<table id="grid" class="easyui-datagrid" style="width:100%;"
@@ -264,102 +289,108 @@
 		</table>
 		
 		<%-- 新增 --%>
-		<div id="addDlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
-			closed="true" buttons="#addDlgBtns" title="新增用户" modal="true" resizable="true">
-			<div class="ftitle">用户信息</div>
-			<form id="addForm" method="post" data-options="url:'<%=basePath%>/user/addUser'">
-				<div class="fitem">
-					<label>账号:</label>
-					<input name="userName" class="easyui-validatebox" required="true" validType="remote['<%=basePath%>/user/checkUserNameExist','userName']" invalidMessage="该用户名已存在">
-				</div>
-				<div class="fitem">
-					<label>密码:</label>
-					<input type="password" name="userPassword" class="easyui-validatebox" required="true">
-				</div>
-				<div class="fitem">
-					<label>是否锁定:</label>
-					<select class="easyui-combobox" name="isLocked" editable="false">
-					    <option value="0" selected="selected">否</option>
-					    <option value="1">是</option>
-					</select>
-				</div>
-				<div class="fitem">
-					<label>备注:</label>
-					<input name="remark" class="easyui-validatebox">
-				</div>
-			</form>
-		</div>
-		<div id="addDlgBtns">
-			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="doAddUser()">保存</a>
-			<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#addDlg').dialog('close')">取消</a>
-		</div>
+		<shiro:hasPermission name="AddUser">
+			<div id="addDlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
+				closed="true" buttons="#addDlgBtns" title="新增用户" modal="true" resizable="true">
+				<div class="ftitle">用户信息</div>
+				<form id="addForm" method="post" data-options="url:'<%=basePath%>/user/addUser'">
+					<div class="fitem">
+						<label>账号:</label>
+						<input name="userName" class="easyui-validatebox" required="true" validType="remote['<%=basePath%>/user/checkUserNameExist','userName']" invalidMessage="该用户名已存在">
+					</div>
+					<div class="fitem">
+						<label>密码:</label>
+						<input type="password" name="userPassword" class="easyui-validatebox" required="true">
+					</div>
+					<div class="fitem">
+						<label>是否锁定:</label>
+						<select class="easyui-combobox" name="isLocked" editable="false">
+						    <option value="0" selected="selected">否</option>
+						    <option value="1">是</option>
+						</select>
+					</div>
+					<div class="fitem">
+						<label>备注:</label>
+						<input name="remark" class="easyui-validatebox">
+					</div>
+				</form>
+			</div>
+			<div id="addDlgBtns">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="doAddUser()">保存</a>
+				<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#addDlg').dialog('close')">取消</a>
+			</div>
+		</shiro:hasPermission>
 		
 		<%-- 编辑 --%>
-		<div id="editDlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
-			closed="true" buttons="#editDlgBtns" title="编辑用户" modal="true" resizable="true">
-			<div class="ftitle">用户信息</div>
-			<form id="editForm" method="post" data-options="url:'<%=basePath%>/user/editUser'">
-				<div class="fitem">
-					<label>账号:</label>
-					<input name="userName" class="easyui-validatebox" readonly="readonly">
-				</div>
-				<div class="fitem">
-					<label>密码:</label>
-					<input type="password" name="userPassword" class="easyui-validatebox" placeholder="无需修改密码请置空">
-				</div>
-				<div class="fitem">
-					<label>是否锁定:</label>
-					<select class="easyui-combobox" name="isLocked" editable="false">
-					    <option value="0">否</option>
-					    <option value="1">是</option>
-					</select>
-				</div>
-				<div class="fitem">
-					<label>备注:</label>
-					<input name="remark" class="easyui-validatebox">
-				</div>
-			</form>
-		</div>
-		<div id="editDlgBtns">
-			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="doEditUser()">保存</a>
-			<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#editDlg').dialog('close')">取消</a>
-		</div>
+		<shiro:hasPermission name="EditUser">
+			<div id="editDlg" class="easyui-dialog" style="width:400px;height:280px;padding:10px 20px"
+				closed="true" buttons="#editDlgBtns" title="编辑用户" modal="true" resizable="true">
+				<div class="ftitle">用户信息</div>
+				<form id="editForm" method="post" data-options="url:'<%=basePath%>/user/editUser'">
+					<div class="fitem">
+						<label>账号:</label>
+						<input name="userName" class="easyui-validatebox" readonly="readonly">
+					</div>
+					<div class="fitem">
+						<label>密码:</label>
+						<input type="password" name="userPassword" class="easyui-validatebox" placeholder="无需修改密码请置空">
+					</div>
+					<div class="fitem">
+						<label>是否锁定:</label>
+						<select class="easyui-combobox" name="isLocked" editable="false">
+						    <option value="0">否</option>
+						    <option value="1">是</option>
+						</select>
+					</div>
+					<div class="fitem">
+						<label>备注:</label>
+						<input name="remark" class="easyui-validatebox">
+					</div>
+				</form>
+			</div>
+			<div id="editDlgBtns">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="doEditUser()">保存</a>
+				<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#editDlg').dialog('close')">取消</a>
+			</div>
+		</shiro:hasPermission>
 		
 		<%-- 分配用户角色 --%>
-		<div id="roleDlg" class="easyui-dialog" style="width:650px;height:500px;padding:10px 20px"
-			closed="true" buttons="#roleDlgBtns" title="分配用户角色" modal="true" resizable="true">
-			<input id="role_userName" name="userName" type="hidden" >
-			<table style="width: 98%;">
-				<tr>
-					<td width="220px">
-						<div >
-							<div>未分配角色</div>
-							<ul id="roleTree" class="ztree"></ul>
-						</div>
-					</td>
-					<td align="center">
-						<div style="width: 100px;">
-							<div style="padding: 10px;">
-								<input type="button" onclick="toRight()" value="&gt;" style="padding: 0px 20px;">
+		<shiro:hasPermission name="AllotRole">
+			<div id="roleDlg" class="easyui-dialog" style="width:650px;height:500px;padding:10px 20px"
+				closed="true" buttons="#roleDlgBtns" title="分配用户角色" modal="true" resizable="true">
+				<input id="role_userName" name="userName" type="hidden" >
+				<table style="width: 98%;">
+					<tr>
+						<td width="220px">
+							<div >
+								<div>未分配角色</div>
+								<ul id="roleTree" class="ztree"></ul>
 							</div>
-							<div style="padding: 10px;">
-								<input type="button" onclick="toLeft()" value="&lt;" style="padding: 0px 20px;">
+						</td>
+						<td align="center">
+							<div style="width: 100px;">
+								<div style="padding: 10px;">
+									<input type="button" onclick="toRight()" value="&gt;" style="padding: 0px 20px;">
+								</div>
+								<div style="padding: 10px;">
+									<input type="button" onclick="toLeft()" value="&lt;" style="padding: 0px 20px;">
+								</div>
 							</div>
-						</div>
-					</td>
-					<td width="220px">
-						<div>
-							<div>已分配角色</div>
-							<ul id="userRoleTree" class="ztree"></ul>
-						</div>
-					</td>
-				</tr>
-			</table>
-		</div>
-		<div id="roleDlgBtns">
-			<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="doUpdateUserRoles()">保存</a>
-			<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#roleDlg').dialog('close')">取消</a>
-		</div>
+						</td>
+						<td width="220px">
+							<div>
+								<div>已分配角色</div>
+								<ul id="userRoleTree" class="ztree"></ul>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div id="roleDlgBtns">
+				<a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="doUpdateUserRoles()">保存</a>
+				<a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#roleDlg').dialog('close')">取消</a>
+			</div>
+		</shiro:hasPermission>
 		
 	</body>
 </html>
